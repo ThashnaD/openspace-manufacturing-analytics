@@ -60,16 +60,20 @@ Instead of querying the raw tables directly in Power BI, I created analytics vie
 
 # The basic idea was:
 
-Raw tables
+**Raw tables:**
 → SQL transformations
-→ Analytics views
+→  Analytics views
 → Power BI dashboard
 
-For example, this view summarizes machine performance:
+**For example, this view summarizes machine performance:**
 CREATE VIEW analytics_vw_machine_summary AS 
+
 SELECT machine_id, plant, SUM(actual_production) AS actual_production, 
+
 SUM(planned_production) AS planned_production, AVG(downtime_minutes) AS downtime, AVG(throughput) AS throughput 
+
 FROM machine_performance 
+
 GROUP BY machine_id, plant;
 
 This creates a cleaner dataset for the dashboard to use.
