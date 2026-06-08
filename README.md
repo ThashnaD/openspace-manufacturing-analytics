@@ -80,7 +80,7 @@ GROUP BY machine_id, plant;
 This creates a cleaner dataset for the dashboard to use.
 
 # Building The Dashboard
-After preparing the data in SQL, I connected the views to Power BI.
+After preparing the data in SQL, I linked the views to Power BI.
 From there I built two dashboard pages.
 
 # Manufacturing Performance
