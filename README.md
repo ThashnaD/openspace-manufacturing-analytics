@@ -20,6 +20,7 @@ The dataset represents pulp production across three mills:
 - Richards Bay Mill
 
 The data includes three main areas of information:
+
 **Machine performance:**
 - Machine ID
 - Actual production
