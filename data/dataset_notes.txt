@@ -1,0 +1,7 @@
+These Excel files were used to inspect the dataset before importing
+the CSV versions into PostgreSQL.
+
+The dataset simulates manufacturing ERP, production, and process
+monitoring data.
+
+C:\C2621
