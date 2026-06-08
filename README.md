@@ -15,27 +15,27 @@ To answer those questions, I built a pipeline using PostgreSQL for data preparat
 # What the Data Is About?
 
 The dataset represents pulp production across three mills:
-Durban Mill
-Pietermaritzburg Mill
-Richards Bay Mill
+- Durban Mill
+- Pietermaritzburg Mill
+- Richards Bay Mill
 
 The data includes three main areas of information:
-Machine performance
-Machine ID
-Actual production
-Planned production
-Machine throughput
-Machine downtime
+**Machine performance:**
+- Machine ID
+- Actual production
+- Planned production
+- Machine throughput
+- Machine downtime
 
-Production output
-Total tons produced
-Production by machine
-Production by mill
+**Production output:**
+- Total tons produced
+- Production by machine
+- Production by mill
 
-Materials
-Raw materials used in production
-Material purchasing costs
-Material spending by plant
+**Materials:**
+- Raw materials used in production
+- Material purchasing costs
+- Material spending by plant
 
 Together these pieces make it possible to look at both operational performance and cost patterns.
 
