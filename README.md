@@ -1,5 +1,6 @@
 # manufacturing-reporting-analytics
-My SQL and Power BI project exploring manufacturing, produ# manufacturing-reporting-analytics
+My SQL and Power BI project exploring manufacturing, 
+# production manufacturing-reporting-analytics
 
 I wanted to practice working through a full analytics workflow, starting from raw data and ending with a dashboard that actually answers useful questions.
 The dataset simulates pulp manufacturing operations across several mills. It includes things like machine production, planned vs actual output, machine downtime, and material purchasing costs.
