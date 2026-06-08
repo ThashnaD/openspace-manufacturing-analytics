@@ -86,30 +86,36 @@ From there I built two dashboard pages.
 # Manufacturing Performance
 
 This page focuses on machine performance and production output.
-It shows things like:
-Average machine downtime
-Best machine throughput
-Total tons produced
-Actual vs planned production by machine
-Production distribution across mills
+
+**It shows things like:**
+- Average machine downtime
+- Best machine throughput
+- Total tons produced
+- Actual vs planned production by machine
+- Production distribution across mills
+  
 This helps identify which machines are performing well and where there might be operational issues.
+
 ![Dashboard](screenshots/Dashboard1.png)
 
 # Mill and Material Analysis
 
 The second page focuses more on cost.
-It looks at:
-Total material cost by plant
-Cost breakdown of materials
-Which materials contribute the most to spending
-This gives a sense of where production costs are coming from.
+
+**It looks at:**
+- Total material cost by plant
+- Cost breakdown of materials
+- Which materials contribute the most to spending
+- This gives a sense of where production costs are coming from.
 
 DAX Measure I Added
 To include at least one analytical calculation in the dashboard, I created a DAX measure to calculate production efficiency.
 The idea is simple: compare actual production against planned production.
 
 Efficiency = DIVIDE( SUM(analytics_vw_machine_summary[actual_production]), SUM(analytics_vw_machine_summary[planned_production]) )
+
 This gives a quick sense of whether production is meeting expectations.
+
 ![Dashboard](screenshots/Dashboard2.png)
 
 # What I Noticed From The Dashboard
