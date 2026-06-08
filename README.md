@@ -66,6 +66,7 @@ Instead of querying the raw tables directly in Power BI, I created analytics vie
 → Power BI dashboard
 
 **For example, this view summarizes machine performance:**
+
 CREATE VIEW analytics_vw_machine_summary AS 
 
 SELECT machine_id, plant, SUM(actual_production) AS actual_production, 
