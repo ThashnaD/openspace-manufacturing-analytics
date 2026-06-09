@@ -144,3 +144,72 @@ Build analytical views
 Create a dashboard that answers real questions
 It helped me get more comfortable thinking about how data moves from raw tables to useful insights.
 
+# Python Analysis: Inventory Risk & Supplier Reliability
+
+## What I Wanted to Find Out
+
+The SQL views I built cover machine performance, production output,
+and material costs well. But there was a procurement question I
+hadn't answered yet:
+
+Which materials are at risk of running out, and are the suppliers
+for those materials actually reliable enough to restock them in time?
+
+I used Python to answer that.
+
+## How I Approached It
+
+Instead of just looking at stock levels in isolation, I connected
+two things together:
+
+- How close each material is to its reorder level (stock buffer)
+- How often each supplier delays orders — but specifically for
+  that material, not just overall
+
+That second point matters. A supplier might be reliable for Wood
+Chips but delay Starch constantly. Averaging their delay rate
+across all materials would hide that. So I calculated the delay
+rate per supplier AND per material combination, then averaged it
+per material for the final risk score.
+
+A material only gets flagged as a procurement risk if both
+conditions are true at the same time — low stock AND unreliable
+supply. One condition alone is not enough.
+
+## What the Analysis Found
+
+- 20 out of 21 material and plant combinations have adequate
+  stock levels
+- Sulfuric Acid at Durban Mill is the only flagged procurement
+  risk — buffer of only 80 units above reorder level with an
+  average supplier delay rate of 33.5%
+- IndusChem has the highest overall delay rate at 46.9% and
+  specifically delays Sulfuric Acid 80% of the time
+- BulkChem and ChemSupply are the most reliable suppliers
+  at around 23% delay rate
+
+## Tools Used
+
+- **pandas** — data loading, cleaning, grouping, merging and
+  calculations
+- **matplotlib** — chart drawing and formatting
+- **seaborn** — heatmap visualisation
+
+## Output
+
+The script produces three charts saved as a single PNG:
+
+1. Stock buffer by material and plant — grouped bar chart with
+   a reorder threshold line
+2. Supplier delay rate — horizontal bar chart colour coded by
+   risk level
+3. Inventory risk heatmap — grid showing risk level per material
+   and plant combination
+
+![Inventory Risk & Supplier Reliability Analysis](screenshots/inventory_risk_analysis.png)
+
+## Files
+
+- `python/inventory_risk_analysis.py` — full script with
+  detailed comments explaining every line
+
