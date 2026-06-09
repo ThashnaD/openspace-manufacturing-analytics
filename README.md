@@ -1,5 +1,6 @@
 # manufacturing-reporting-analytics
-My SQL and Power BI project exploring manufacturing, produ# manufacturing-reporting-analytics
+My SQL and Power BI project exploring manufacturing, 
+# production manufacturing-reporting-analytics
 
 I wanted to practice working through a full analytics workflow, starting from raw data and ending with a dashboard that actually answers useful questions.
 The dataset simulates pulp manufacturing operations across several mills. It includes things like machine production, planned vs actual output, machine downtime, and material purchasing costs.
@@ -14,27 +15,28 @@ To answer those questions, I built a pipeline using PostgreSQL for data preparat
 # What the Data Is About?
 
 The dataset represents pulp production across three mills:
-Durban Mill
-Pietermaritzburg Mill
-Richards Bay Mill
+- Durban Mill
+- Pietermaritzburg Mill
+- Richards Bay Mill
 
 The data includes three main areas of information:
-Machine performance
-Machine ID
-Actual production
-Planned production
-Machine throughput
-Machine downtime
 
-Production output
-Total tons produced
-Production by machine
-Production by mill
+**Machine performance:**
+- Machine ID
+- Actual production
+- Planned production
+- Machine throughput
+- Machine downtime
 
-Materials
-Raw materials used in production
-Material purchasing costs
-Material spending by plant
+**Production output:**
+- Total tons produced
+- Production by machine
+- Production by mill
+
+**Materials:**
+- Raw materials used in production
+- Material purchasing costs
+- Material spending by plant
 
 Together these pieces make it possible to look at both operational performance and cost patterns.
 
@@ -58,51 +60,62 @@ Instead of querying the raw tables directly in Power BI, I created analytics vie
 
 # The basic idea was:
 
-Raw tables
+**Raw tables:**
 → SQL transformations
-→ Analytics views
+→  Analytics views
 → Power BI dashboard
 
-For example, this view summarizes machine performance:
+**For example, this view summarizes machine performance:**
+
 CREATE VIEW analytics_vw_machine_summary AS 
+
 SELECT machine_id, plant, SUM(actual_production) AS actual_production, 
+
 SUM(planned_production) AS planned_production, AVG(downtime_minutes) AS downtime, AVG(throughput) AS throughput 
+
 FROM machine_performance 
+
 GROUP BY machine_id, plant;
 
 This creates a cleaner dataset for the dashboard to use.
 
 # Building The Dashboard
-After preparing the data in SQL, I connected the views to Power BI.
+After preparing the data in SQL, I linked the views to Power BI.
 From there I built two dashboard pages.
 
 # Manufacturing Performance
 
 This page focuses on machine performance and production output.
-It shows things like:
-Average machine downtime
-Best machine throughput
-Total tons produced
-Actual vs planned production by machine
-Production distribution across mills
+
+**It shows things like:**
+- Average machine downtime
+- Best machine throughput
+- Total tons produced
+- Actual vs planned production by machine
+- Production distribution across mills
+  
 This helps identify which machines are performing well and where there might be operational issues.
+
 ![Dashboard](screenshots/Dashboard1.png)
 
 # Mill and Material Analysis
 
 The second page focuses more on cost.
-It looks at:
-Total material cost by plant
-Cost breakdown of materials
-Which materials contribute the most to spending
-This gives a sense of where production costs are coming from.
+
+**It looks at:**
+- Total material cost by plant
+- Cost breakdown of materials
+- Which materials contribute the most to spending
+- This gives a sense of where production costs are coming from.
 
 DAX Measure I Added
 To include at least one analytical calculation in the dashboard, I created a DAX measure to calculate production efficiency.
 The idea is simple: compare actual production against planned production.
 
 Efficiency = DIVIDE( SUM(analytics_vw_machine_summary[actual_production]), SUM(analytics_vw_machine_summary[planned_production]) )
+
 This gives a quick sense of whether production is meeting expectations.
+
 ![Dashboard](screenshots/Dashboard2.png)
 
 # What I Noticed From The Dashboard
