@@ -130,19 +130,19 @@ These kinds of patterns are exactly the type of things dashboards are meant to h
 
 # Tools Used
 
-PostgreSQL — storing the dataset and writing SQL transformations
-Power BI — building the dashboard and visualizing the data
-DAX — calculating production efficiency
-GitHub — documenting the project and version control
+- PostgreSQL — storing the dataset and writing SQL transformations
+- Power BI — building the dashboard and visualizing the data
+- DAX — calculating production efficiency
+- GitHub — documenting the project and version control
 
 # Final Thoughts
 
 This project was mainly about practicing the full workflow of a data analyst:
-Start with raw data
-Transform it using SQL
-Build analytical views
-Create a dashboard that answers real questions
-It helped me get more comfortable thinking about how data moves from raw tables to useful insights.
+- Start with raw data
+- Transform it using SQL
+- Build analytical views
+- Create a dashboard that answers real questions
+- It helped me get more comfortable thinking about how data moves from raw tables to useful insights.
 
 # Python Analysis: Inventory Risk & Supplier Reliability
 
