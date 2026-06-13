@@ -1,215 +1,282 @@
-# manufacturing-reporting-analytics
-My SQL and Power BI project exploring manufacturing, 
-# production manufacturing-reporting-analytics
+# Manufacturing & Production Analytics
+### Openspace Analytics · openspaceanalytics.org
 
-I wanted to practice working through a full analytics workflow, starting from raw data and ending with a dashboard that actually answers useful questions.
-The dataset simulates pulp manufacturing operations across several mills. It includes things like machine production, planned vs actual output, machine downtime, and material purchasing costs.
+---
 
-Instead of just exploring the data randomly, I tried to approach it like a real analysis problem:
-What would plant managers want to know?
-What would help them understand production performance?
-Where are the inefficiencies or cost drivers?
+## Project overview
 
-To answer those questions, I built a pipeline using PostgreSQL for data preparation and Power BI for analysis and visualization.
+This project demonstrates a complete analytics pipeline
+built for a pulp manufacturing operation. It covers
+production performance, machine efficiency, downtime
+analysis, and material cost intelligence across three
+production mills.
 
-# What the Data Is About?
+The pipeline moves from raw operational data through
+structured SQL views to a live Power BI dashboard —
+the same architecture we deploy for manufacturing
+clients connecting to their ERP or production systems.
 
-The dataset represents pulp production across three mills:
+**Pipeline:**
+Raw data → PostgreSQL → SQL views → Power BI dashboard
+
+---
+
+## Business context
+
+Production managers in pulp and paper manufacturing
+deal with the same core reporting challenges:
+
+- Planned vs actual production targets are tracked
+  in spreadsheets, not dashboards
+- Machine downtime is recorded but rarely analysed
+  for patterns
+- Material costs are visible in accounting but not
+  connected to production output
+
+This project answers the questions those managers
+actually ask — built on a dataset representing three
+South African pulp mills.
+
+---
+
+## The dataset
+
+The dataset represents pulp production operations
+across three mills:
+
 - Durban Mill
 - Pietermaritzburg Mill
 - Richards Bay Mill
 
-The data includes three main areas of information:
+**Three data domains are covered:**
 
-**Machine performance:**
-- Machine ID
-- Actual production
-- Planned production
-- Machine throughput
-- Machine downtime
+Machine performance
+- Machine ID and plant assignment
+- Actual vs planned production output
+- Machine throughput rates
+- Downtime in minutes per production run
 
-**Production output:**
-- Total tons produced
-- Production by machine
-- Production by mill
+Production output
+- Total tons produced per machine and per mill
+- Production distribution across facilities
 
-**Materials:**
+Materials and procurement
 - Raw materials used in production
-- Material purchasing costs
-- Material spending by plant
+- Material purchasing costs by plant
+- Spending patterns across mills
 
-Together these pieces make it possible to look at both operational performance and cost patterns.
+---
 
-# Questions I Tried To Answer
-When I started building the dashboard I tried to frame the analysis around questions a production manager might ask:
+## SQL — data preparation layer
 
-Which machines are producing the most output?
-Are we hitting our planned production targets?
-Which machines experience the most downtime?
-Which mill produces the most pulp?
-Which materials contribute the most to cost?
-Do different mills spend differently on materials?
-Overall, how efficiently are we producing compared to plan?
+Raw tables were loaded into PostgreSQL. Rather than
+querying raw data directly in Power BI, we built
+analytical views that aggregate and clean the data
+first. This separation keeps the dashboard logic clean
+and makes the pipeline maintainable.
 
-The dashboard is designed to help answer those questions quickly.
+**View structure:**
 
-Working With The Data (SQL)
-The raw dataset was loaded into PostgreSQL.
-From there I started writing SQL to reshape the data into something easier to analyze.
-Instead of querying the raw tables directly in Power BI, I created analytics views that aggregate the data first.
-
-# The basic idea was:
-
-**Raw tables:**
-→ SQL transformations
-→  Analytics views
-→ Power BI dashboard
-
-**For example, this view summarizes machine performance:**
-
-CREATE VIEW analytics_vw_machine_summary AS 
-
-SELECT machine_id, plant, SUM(actual_production) AS actual_production, 
-
-SUM(planned_production) AS planned_production, AVG(downtime_minutes) AS downtime, AVG(throughput) AS throughput 
-
-FROM machine_performance 
-
+```sql
+CREATE VIEW analytics.vw_machine_summary AS
+SELECT
+machine_id,
+plant,
+SUM(actual_production) AS actual_production,
+SUM(planned_production) AS planned_production,
+AVG(downtime_minutes) AS avg_downtime_minutes,
+AVG(throughput) AS avg_throughput
+FROM raw_data.machine_performance
 GROUP BY machine_id, plant;
+```
 
-This creates a cleaner dataset for the dashboard to use.
+Additional views cover production summary by product,
+machine downtime analysis, and combined machine
+performance combining throughput and downtime in a
+single queryable layer.
 
-# Building The Dashboard
-After preparing the data in SQL, I linked the views to Power BI.
-From there I built two dashboard pages.
+Full SQL scripts are in the `/sql` folder.
 
-# Manufacturing Performance
+---
 
-This page focuses on machine performance and production output.
+## Power BI dashboard
 
-**It shows things like:**
-- Average machine downtime
-- Best machine throughput
-- Total tons produced
+Two dashboard pages were built on top of the SQL views.
+
+**Page 1 — Manufacturing performance**
+
+Focuses on machine-level production and operational
+efficiency. Key visuals include:
+
+- Average machine downtime across all machines
+- Best performing machine by throughput
+- Total tons produced (YTD)
 - Actual vs planned production by machine
-- Production distribution across mills
-  
-This helps identify which machines are performing well and where there might be operational issues.
+- Production distribution by mill
 
-![Dashboard](screenshots/Dashboard1.png)
+This page gives production managers an immediate view
+of which machines are performing and where operational
+issues are concentrated.
 
-# Mill and Material Analysis
+![Manufacturing Performance Dashboard](screenshots/Dashboard1.png)
 
-The second page focuses more on cost.
+**Page 2 — Mill and material analysis**
 
-**It looks at:**
+Focuses on cost intelligence at the mill level. Key
+visuals include:
+
 - Total material cost by plant
-- Cost breakdown of materials
-- Which materials contribute the most to spending
-- This gives a sense of where production costs are coming from.
+- Cost breakdown by material type
+- Highest cost materials by spend
+- Spending variation across mills
 
-DAX Measure I Added
-To include at least one analytical calculation in the dashboard, I created a DAX measure to calculate production efficiency.
-The idea is simple: compare actual production against planned production.
+This connects production volume to input costs —
+answering the question of whether high-output mills
+are also cost-efficient.
 
-Efficiency = DIVIDE( SUM(analytics_vw_machine_summary[actual_production]), SUM(analytics_vw_machine_summary[planned_production]) )
+![Mill and Material Analysis Dashboard](screenshots/Dashboard2.png)
 
-This gives a quick sense of whether production is meeting expectations.
+**DAX measure — production efficiency**
 
-![Dashboard](screenshots/Dashboard2.png)
+A DAX measure was created to track production
+efficiency as a calculated metric across the dashboard:
+Production efficiency =
 
-# What I Noticed From The Dashboard
+DIVIDE(
 
-A few things stood out while exploring the visuals:
-Some machines clearly outperform others in throughput.
-Machine downtime varies quite a bit across machines.
-Durban Mill contributes a large share of total production.
-Certain raw materials dominate overall cost.
-Material spending patterns differ slightly between mills.
-These kinds of patterns are exactly the type of things dashboards are meant to highlight quickly.
+SUM(vw_machine_summary[actual_production]),
 
-# Tools Used
+SUM(vw_machine_summary[planned_production])
 
-- PostgreSQL — storing the dataset and writing SQL transformations
-- Power BI — building the dashboard and visualizing the data
-- DAX — calculating production efficiency
-- GitHub — documenting the project and version control
+)
 
-# Final Thoughts
+This gives management a single percentage that
+immediately communicates whether the operation is
+meeting its production plan.
 
-This project was mainly about practicing the full workflow of a data analyst:
-- Start with raw data
-- Transform it using SQL
-- Build analytical views
-- Create a dashboard that answers real questions
-- It helped me get more comfortable thinking about how data moves from raw tables to useful insights.
+---
 
-# Python Analysis: Inventory Risk & Supplier Reliability
+## Key findings from the analysis
 
-## What I Wanted to Find Out
+The dashboard surfaces several patterns relevant to
+production management decisions:
 
-The SQL views I built cover machine performance, production output,
-and material costs well. But there was a procurement question I
-hadn't answered yet:
+- Machine throughput varies significantly across the
+  fleet — the highest performing machines outproduce
+  the lowest by a measurable margin
+- Downtime is not evenly distributed — certain machines
+  account for a disproportionate share of lost production
+  time and warrant closer maintenance attention
+- Durban Mill contributes the largest share of total
+  production output across the three facilities
+- A small number of raw materials account for the
+  majority of procurement spend
+- Material spending patterns differ between mills in
+  ways that are not explained by production volume alone
 
-Which materials are at risk of running out, and are the suppliers
-for those materials actually reliable enough to restock them in time?
+---
 
-I used Python to answer that.
+## Python analysis — inventory risk and supplier reliability
 
-## How I Approached It
+**Business question:**
+Which materials are at risk of running out, and are
+the suppliers for those materials reliable enough to
+restock them in time?
 
-Instead of just looking at stock levels in isolation, I connected
-two things together:
+**Approach:**
 
-- How close each material is to its reorder level (stock buffer)
-- How often each supplier delays orders — but specifically for
-  that material, not just overall
+Two factors were combined to calculate procurement risk:
 
-That second point matters. A supplier might be reliable for Wood
-Chips but delay Starch constantly. Averaging their delay rate
-across all materials would hide that. So I calculated the delay
-rate per supplier AND per material combination, then averaged it
-per material for the final risk score.
+1. Stock buffer — how close each material is to its
+   reorder level
+2. Supplier delay rate — calculated per supplier AND
+   per material combination, not averaged across all
+   materials
 
-A material only gets flagged as a procurement risk if both
-conditions are true at the same time — low stock AND unreliable
-supply. One condition alone is not enough.
+The second point is critical. A supplier may be
+reliable for Wood Chips but consistently delay Starch
+deliveries. An overall average delay rate would hide
+that. Our approach calculates delay rates at the
+material and supplier level before rolling up to a
+final risk score.
 
-## What the Analysis Found
+A material is only flagged as a procurement risk when
+both conditions are true simultaneously — low stock
+buffer AND unreliable supply for that specific material.
 
-- 20 out of 21 material and plant combinations have adequate
-  stock levels
-- Sulfuric Acid at Durban Mill is the only flagged procurement
-  risk — buffer of only 80 units above reorder level with an
-  average supplier delay rate of 33.5%
-- IndusChem has the highest overall delay rate at 46.9% and
-  specifically delays Sulfuric Acid 80% of the time
-- BulkChem and ChemSupply are the most reliable suppliers
-  at around 23% delay rate
+**Findings:**
 
-## Tools Used
+- 20 of 21 material and plant combinations have
+  adequate stock levels
+- Sulfuric Acid at Durban Mill is the only confirmed
+  procurement risk — buffer of 80 units above reorder
+  level with a supplier delay rate of 33.5%
+- IndusChem has the highest overall delay rate at 46.9%
+  and delays Sulfuric Acid specifically 80% of the time
+- BulkChem and ChemSupply are the most reliable
+  suppliers at approximately 23% delay rate
 
-- **pandas** — data loading, cleaning, grouping, merging and
-  calculations
-- **matplotlib** — chart drawing and formatting
-- **seaborn** — heatmap visualisation
+**Output — three charts produced:**
 
-## Output
+1. Stock buffer by material and plant — grouped bar
+   chart with reorder threshold line
+2. Supplier delay rate by supplier — horizontal bar
+   chart colour coded by risk level
+3. Inventory risk heatmap — grid showing risk level
+   per material and plant combination
 
-The script produces three charts saved as a single PNG:
+![Inventory Risk Analysis](screenshots/inventory_risk_analysis.png)
 
-1. Stock buffer by material and plant — grouped bar chart with
-   a reorder threshold line
-2. Supplier delay rate — horizontal bar chart colour coded by
-   risk level
-3. Inventory risk heatmap — grid showing risk level per material
-   and plant combination
+Full script with line-by-line comments is in
+`/python/inventory_risk_analysis.py`
 
-![Inventory Risk & Supplier Reliability Analysis](screenshots/inventory_risk_analysis.png)
+---
 
-## Files
+## Tools used
 
-- `python/inventory_risk_analysis.py` — full script with
-  detailed comments explaining every line
+| Tool | Purpose |
+|---|---|
+| PostgreSQL | Data storage and SQL view layer |
+| Power BI | Dashboard and visualisation |
+| DAX | Production efficiency measure |
+| Python (pandas) | Data loading, cleaning, grouping |
+| Python (matplotlib) | Chart drawing and formatting |
+| Python (seaborn) | Heatmap visualisation |
+| GitHub | Version control and documentation |
+
+---
+
+## Repository structure
+
+manufacturing-reporting-analytics/
+
+├── sql/
+
+│   └── analytics_views_summary.sql
+
+├── python/
+
+│   └── inventory_risk_analysis.py
+
+├── screenshots/
+
+│   ├── Dashboard1.png
+
+│   ├── Dashboard2.png
+
+│   └── inventory_risk_analysis.png
+
+└── README.md
+
+---
+
+## About Openspace Analytics
+
+We are a Johannesburg-based data analytics practice
+helping manufacturers and industrial SMEs connect their
+operational data to dashboards that drive decisions.
+
+**thashna@openspaceanalytics.org**
+**openspaceanalytics.org**
+
 
