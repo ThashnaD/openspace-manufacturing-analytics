@@ -268,7 +268,94 @@ manufacturing-reporting-analytics/
 
 └── README.md
 
+
+## Dashboard update — date filter and star schema
+
+After the initial dashboard was built, I added a month-level date slicer
+so production data can be filtered by time period directly in Power BI.
+
+This required changes at both the SQL and data model level.
+
 ---
+
+### What changed in SQL
+
+All existing analytics views were updated to include a `production_month`
+column. This is derived from `start_time` in the production orders table
+using `DATE_TRUNC('month', start_time)::DATE`, which truncates each
+timestamp to the first day of its month.
+
+For the purchases view, `order_date` was used instead of `start_time`
+because purchase orders use a date field rather than a timestamp.
+
+The updated views are in `sql/analytics_views_date_filter.sql`.
+
+---
+
+### Dimension views — star schema
+
+Two new dimension views were created to act as the one side of a
+star schema in Power BI.
+
+**date_dim**
+One unique row per production month derived from actual data in
+production orders. Only months with real production activity appear.
+Fields: `production_month`, `year`, `month_number`, `month_label`
+
+**machine_dim**
+One unique row per machine pulled from the machines reference table.
+Fields: `machine_id`, `plant`, `machine_type`, `commission_year`
+
+These two views sit at the centre of the data model. All fact views
+connect to them via `production_month` and `machine_id` respectively.
+
+---
+
+### Power BI data model
+
+The model follows a star schema pattern:
+
+```
+date_dim    (1) ──── (*) all fact views
+machine_dim (1) ──── (*) all fact views
+```
+
+All relationships are set to cross-filter in both directions so a
+selection on either dimension table filters all connected visuals
+simultaneously.
+
+---
+
+### Slicers added
+
+A month range slicer was added to the Manufacturing Performance Dashboard.
+It uses `production_month` from `date_dim` and is formatted as a
+between-style date range picker.
+
+The existing machine name slicer was reconnected to `machine_id` from
+`machine_dim` so it filters through the star schema correctly.
+
+Both slicers work together — selecting a machine and a date range
+filters all KPI cards and charts on the page at the same time.
+
+---
+
+### DAX measure update
+
+The production efficiency measure was updated to reflect the restructured
+views:
+
+```dax
+Production Efficiency =
+DIVIDE(
+    SUM('analytics vw_machine_summary'[actual_production]),
+    SUM('analytics vw_machine_summary'[planned_production])
+)
+```
+
+The measure is formatted as a percentage in Power BI and displayed
+on the Overall Efficiency KPI card.
+
 
 ## About Openspace Analytics
 
