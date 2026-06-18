@@ -134,7 +134,7 @@ This connects production volume to input costs —
 answering the question of whether high-output mills
 are also cost-efficient.
 
-![Mill and Material Analysis Dashboard](screenshos/Dashboard2.png)
+![Mill and Material Analysis Dashboard](screenshots/Dashboard2.png)
 
 **DAX measure — production efficiency**
 
