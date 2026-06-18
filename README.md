@@ -1,5 +1,5 @@
 # Manufacturing & Production Analytics
-### Openspace Analytics · openspaceanalytics.org
+
 
 ---
 
@@ -357,13 +357,8 @@ The measure is formatted as a percentage in Power BI and displayed
 on the Overall Efficiency KPI card.
 
 
-## About Openspace Analytics
 
-We are a Johannesburg-based data analytics practice
-helping manufacturers and industrial SMEs connect their
-operational data to dashboards that drive decisions.
 
-**thashna@openspaceanalytics.org**
-**openspaceanalytics.org**
+
 
 
