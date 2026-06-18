@@ -37,6 +37,12 @@
 # all pandas functions.
 import pandas as pd
 
+# matplotlib — the main library that pyplot and patches
+# both live inside. We import it on its own line first
+# so Python loads the full library before we access
+# specific parts of it below.
+import matplotlib
+
 # matplotlib.pyplot — the chart drawing engine.
 # plt. gives us access to all chart drawing functions.
 import matplotlib.pyplot as plt
